@@ -1,0 +1,40 @@
+$token = env('FONNTE_TOKEN');
+
+$message =
+"📢 *KONFIRMASI PENYELESAIAN AUDIT*\n"
+. "================================\n\n"
+
+. "Halo *Tim Auditor*,\n\n"
+
+. "Teller telah menyelesaikan temuan audit dan mengupload bukti penyelesaian.\n\n"
+
+. "```\n"
+. "Tanggal Audit : " . $audit->transaction_date . "\n"
+. "ID Teller     : " . $user->user_code . "\n"
+. "Nama Teller   : " . $user->name . "\n"
+. "No Rekening   : " . $audit->account_number . "\n"
+. "Nasabah       : " . $audit->customer_name . "\n"
+. "Jenis Trans   : " . $audit->transaction_type . "\n"
+. "Status        : MENUNGGU REVIEW\n"
+. "Waktu Upload  : " . now()->format('d-m-Y H:i') . "\n"
+. "```\n\n"
+
+. "📝 *Catatan Teller:*\n"
+. $response->note . "\n\n"
+
+. "📎 Bukti penyelesaian sudah berhasil dilampirkan.\n\n"
+
+. "Silahkan login Sistem Audit untuk melakukan pengecekan dan approval.\n\n"
+
+. "--------------------------------\n"
+. "-=| *AUDIT MONITORING SYSTEM* |=-";
+
+
+Http::withoutVerifying()
+    ->withHeaders([
+        'Authorization' => $token,
+    ])
+    ->post('https://api.fonnte.com/send', [
+        'target'  => $auditor->phone,
+        'message' => $message,
+    ]);
