@@ -104,7 +104,7 @@
                     @forelse($transactions as $audit)
                         <tr class="align-top">
                             <td class="py-3.5 px-3 text-gray-500 font-medium">{{ $loop->iteration }}</td>
-                            <td class="py-3.5 px-3 font-medium text-gray-900 dark:text-white">{{ $audit->transaction_date }}</td>
+                            <td class="py-3.5 px-3 font-medium text-gray-900 dark:text-white">{{ \Carbon\Carbon::parse($audit->transaction_date)->format('d-m-Y') }}</td>
                             <td class="py-3.5 px-3 font-mono">{{ $audit->user_code }}</td>
                             <td class="py-3.5 px-3">{{ $audit->account_number }}</td>
                             <td class="py-3.5 px-3 font-medium text-gray-900 dark:text-white">{{ $audit->customer_name }}</td>

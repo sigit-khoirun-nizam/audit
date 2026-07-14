@@ -1,40 +1,6 @@
-$token = env('FONNTE_TOKEN');
-
-$message =
-"📢 *KONFIRMASI PENYELESAIAN AUDIT*\n"
-. "================================\n\n"
-
-. "Halo *Tim Auditor*,\n\n"
-
-. "Teller telah menyelesaikan temuan audit dan mengupload bukti penyelesaian.\n\n"
-
-. "```\n"
-. "Tanggal Audit : " . $audit->transaction_date . "\n"
-. "ID Teller     : " . $user->user_code . "\n"
-. "Nama Teller   : " . $user->name . "\n"
-. "No Rekening   : " . $audit->account_number . "\n"
-. "Nasabah       : " . $audit->customer_name . "\n"
-. "Jenis Trans   : " . $audit->transaction_type . "\n"
-. "Status        : MENUNGGU REVIEW\n"
-. "Waktu Upload  : " . now()->format('d-m-Y H:i') . "\n"
-. "```\n\n"
-
-. "📝 *Catatan Teller:*\n"
-. $response->note . "\n\n"
-
-. "📎 Bukti penyelesaian sudah berhasil dilampirkan.\n\n"
-
-. "Silahkan login Sistem Audit untuk melakukan pengecekan dan approval.\n\n"
-
-. "--------------------------------\n"
-. "-=| *AUDIT MONITORING SYSTEM* |=-";
-
-
-Http::withoutVerifying()
-    ->withHeaders([
-        'Authorization' => $token,
-    ])
-    ->post('https://api.fonnte.com/send', [
-        'target'  => $auditor->phone,
-        'message' => $message,
-    ]);
+<button type="button" @click="open = !open" @click.outside="open = false" class="h-11 w-full rounded-lg border  border-gray-300 dark:border-gray-700  bg-transparent px-4 py-2.5 text-sm text-left text-gray-800 dark:text-white/90 focus:outline-hidden focus:ring-1 focus:ring-brand-500 focus:border-brand-500 flex justify-between items-center dark:bg-white/[0.03]">
+                            <span x-text="selectedName" :class="selectedId ? 'text-gray-800 dark:text-white' : 'text-gray-400 dark:text-gray-500'" class="text-gray-400 dark:text-gray-500">Pilih Pengguna</span>
+                            <svg class="w-5 h-5 text-gray-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>

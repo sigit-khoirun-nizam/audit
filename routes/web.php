@@ -86,6 +86,7 @@ use App\Http\Controllers\AuditResponseController;
 use App\Http\Controllers\AuditCommentController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SettingController;
 
 Route::middleware(['auth'])->group(function () {
     // Dashboard
@@ -97,6 +98,7 @@ Route::middleware(['auth'])->group(function () {
     // Audit Transactions
     Route::get('audit/import/template', [AuditTransactionController::class, 'downloadTemplate'])->name('audit.import.template');
     Route::post('audit/import', [AuditTransactionController::class, 'importExcel'])->name('audit.import');
+    Route::get('audit/{id}/pdf', [AuditTransactionController::class, 'downloadPdf'])->name('audit.pdf');
     Route::resource('audit', AuditTransactionController::class);
 
     // Responses & Evidence
@@ -109,6 +111,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('report', [ReportController::class, 'index'])->name('report.index');
     Route::get('report/export/excel', [ReportController::class, 'exportExcel'])->name('report.export.excel');
     Route::get('report/export/pdf', [ReportController::class, 'exportPdf'])->name('report.export.pdf');
+
+    // Settings
+    Route::get('settings', [SettingController::class, 'index'])->name('settings.index')->middleware('role:Superadmin|Auditor');
+    Route::post('settings', [SettingController::class, 'update'])->name('settings.update')->middleware('role:Superadmin|Auditor');
 });
 
 

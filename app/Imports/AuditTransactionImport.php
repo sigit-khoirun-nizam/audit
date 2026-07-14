@@ -51,8 +51,12 @@ class AuditTransactionImport implements ToModel, WithHeadingRow
                 // Keep original if parsing fails
             }
         } else if ($date) {
-            // Standard parse
-            $date = date('Y-m-d', strtotime(str_replace('/', '-', $date)));
+            // Standard parse using Carbon to handle formats like m/d/Y safely
+            try {
+                $date = \Carbon\Carbon::parse($date)->format('Y-m-d');
+            } catch (\Exception $e) {
+                $date = date('Y-m-d', strtotime(str_replace('/', '-', $date)));
+            }
         }
 
         $transaction = AuditTransaction::create([

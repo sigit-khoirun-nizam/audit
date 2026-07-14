@@ -160,12 +160,16 @@
                 });
             @endif
 
-            @if($errors->has('file'))
+            @if($errors->any())
+                let errorMessages = '';
+                @foreach($errors->all() as $error)
+                    errorMessages += '{{ $error }}\n';
+                @endforeach
                 Swal.fire({
                     ...swalConfig,
                     icon: 'error',
-                    title: 'Error Pengimporan!',
-                    text: '{{ $errors->first('file') }}',
+                    title: 'Terdapat Kesalahan!',
+                    text: errorMessages,
                 });
             @endif
         });

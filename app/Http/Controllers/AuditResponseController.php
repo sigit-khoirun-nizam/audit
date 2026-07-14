@@ -21,7 +21,16 @@ class AuditResponseController extends Controller
             'audit_transaction_id' => 'required|exists:audit_transactions,id',
             'note'                 => 'required|string',
             'files'                => 'required|array|min:1',
-            'files.*'              => 'file|max:5120|mimes:jpg,jpeg,png,pdf',
+            'files.*'              => 'file|max:5120|mimes:jpg,jpeg,png,pdf,xlsx,xls,csv',
+        ], [
+            'files.*.mimes' => 'Format file yang diunggah harus: jpg, jpeg, png, pdf, xlsx, xls, csv.',
+            'files.*.max' => 'Ukuran file tidak boleh lebih dari 5MB.',
+            'files.*.file' => 'File tidak valid.',
+            'files.*.uploaded' => 'Gagal mengunggah file. Pastikan ukuran file tidak terlalu besar.',
+            'files.required' => 'File bukti wajib dilampirkan.',
+            'files.min' => 'Minimal satu file bukti harus dilampirkan.',
+            'note.required' => 'Catatan respon wajib diisi.',
+            'note.string' => 'Catatan respon tidak valid.',
         ]);
 
         $transaction = AuditTransaction::findOrFail($request->audit_transaction_id);

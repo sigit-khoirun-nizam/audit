@@ -99,7 +99,7 @@
                     <x-common.common-grid-shape/>
                     <div class="flex max-w-xs flex-col items-center">
                         <a href="/" class="mb-4 block">
-                            <img src="{{ asset('images/logo/auth-logo.svg') }}" alt="Logo" />
+                            <img src="{{ asset('images/livin.png') }}" alt="Logo" class="max-w-[150px] h-auto" />
                         </a>
                         <p class="text-center text-gray-400 dark:text-white/60">
                             Sistem Informasi Audit Transaksi

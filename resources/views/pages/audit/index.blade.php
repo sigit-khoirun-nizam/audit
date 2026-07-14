@@ -40,37 +40,51 @@
             <div>
                 <label class="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">Cari</label>
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="No Rek, Nasabah, Kode User..."
-                    class="h-10 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:text-white/90" />
+                    class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:text-white/90" />
             </div>
             <!-- Status -->
             <div>
                 <label class="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">Status</label>
-                <select name="status" class="h-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                    <option value="">Semua Status</option>
-                    <option value="PENDING" {{ request('status') === 'PENDING' ? 'selected' : '' }}>PENDING</option>
-                    <option value="ON_REVIEW" {{ request('status') === 'ON_REVIEW' ? 'selected' : '' }}>SEDANG DITINJAU</option>
-                    <option value="REVISION" {{ request('status') === 'REVISION' ? 'selected' : '' }}>REVISI</option>
-                    <option value="DONE" {{ request('status') === 'DONE' ? 'selected' : '' }}>SELESAI</option>
-                </select>
+                <div class="relative z-20 bg-transparent">
+                    <select name="status" 
+                        class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 pr-11 text-sm text-gray-800 dark:text-white/90 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:placeholder:text-white/30">
+                        <option value="" class="text-gray-700 dark:bg-gray-900 dark:text-gray-400">Semua Status</option>
+                        <option value="PENDING" class="text-gray-700 dark:bg-gray-900 dark:text-gray-400" {{ request('status') === 'PENDING' ? 'selected' : '' }}>PENDING</option>
+                        <option value="ON_REVIEW" class="text-gray-700 dark:bg-gray-900 dark:text-gray-400" {{ request('status') === 'ON_REVIEW' ? 'selected' : '' }}>SEDANG DITINJAU</option>
+                        <option value="REVISION" class="text-gray-700 dark:bg-gray-900 dark:text-gray-400" {{ request('status') === 'REVISION' ? 'selected' : '' }}>REVISI</option>
+                        <option value="DONE" class="text-gray-700 dark:bg-gray-900 dark:text-gray-400" {{ request('status') === 'DONE' ? 'selected' : '' }}>SELESAI</option>
+                    </select>
+                    <span class="pointer-events-none absolute top-1/2 right-4 z-30 -translate-y-1/2 text-gray-700 dark:text-gray-400">
+                        <svg class="stroke-current" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4.79175 7.396L10.0001 12.6043L15.2084 7.396" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </span>
+                </div>
             </div>
             <!-- Tanggal Mulai -->
             <div>
-                <label class="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">Tanggal Mulai</label>
-                <input type="date" name="start_date" value="{{ request('start_date') }}"
-                    class="h-10 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white/90" />
+                <x-form.date-picker 
+                    id="start_date" 
+                    name="start_date" 
+                    label="Tanggal Mulai" 
+                    placeholder="Pilih Tanggal" 
+                    defaultDate="{{ request('start_date') }}" />
             </div>
             <!-- Tanggal Akhir -->
             <div class="flex items-end gap-2">
                 <div class="flex-grow">
-                    <label class="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">Tanggal Akhir</label>
-                    <input type="date" name="end_date" value="{{ request('end_date') }}"
-                        class="h-10 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white/90" />
+                    <x-form.date-picker 
+                        id="end_date" 
+                        name="end_date" 
+                        label="Tanggal Akhir" 
+                        placeholder="Pilih Tanggal" 
+                        defaultDate="{{ request('end_date') }}" />
                 </div>
-                <button type="submit" class="h-10 rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10 transition">
+                <button type="submit" class="h-11 rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10 transition">
                     Filter
                 </button>
                 @if(request()->anyFilled(['search', 'status', 'start_date', 'end_date']))
-                    <a href="{{ route('audit.index') }}" class="h-10 flex items-center justify-center rounded-lg bg-red-50 px-3 text-sm font-medium text-red-600 hover:bg-red-100 dark:bg-red-500/10 dark:text-red-500 transition">
+                    <a href="{{ route('audit.index') }}" class="h-11 flex items-center justify-center rounded-lg bg-red-50 px-3 text-sm font-medium text-red-600 hover:bg-red-100 dark:bg-red-500/10 dark:text-red-500 transition">
                         Reset
                     </a>
                 @endif
@@ -99,7 +113,7 @@
                     @forelse($transactions as $audit)
                         <tr>
                             <td class="py-3.5 px-4 text-gray-500">{{ $loop->iteration + ($transactions->firstItem() - 1) }}</td>
-                            <td class="py-3.5 px-4 font-medium">{{ $audit->transaction_date }}</td>
+                            <td class="py-3.5 px-4 font-medium">{{ \Carbon\Carbon::parse($audit->transaction_date)->format('d-m-Y') }}</td>
                             <td class="py-3.5 px-4 text-gray-500 dark:text-gray-400">{{ $audit->user_code }}</td>
                             <td class="py-3.5 px-4">{{ $audit->account_number }}</td>
                             <td class="py-3.5 px-4 font-medium">{{ $audit->customer_name }}</td>
@@ -107,19 +121,70 @@
                             <td class="py-3.5 px-4 text-sm">{{ $audit->user ? $audit->user->name : 'Tidak Ada' }}</td>
                             <td class="py-3.5 px-4">
                                 @if($audit->status === 'PENDING')
-                                    <span class="inline-flex rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-500/10 dark:text-amber-500">PENDING</span>
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-800 dark:bg-amber-500/10 dark:text-amber-500">
+                                        <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                        PENDING
+                                    </span>
                                 @elseif($audit->status === 'ON_REVIEW')
-                                    <span class="inline-flex rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-500/10 dark:text-blue-500">SEDANG DITINJAU</span>
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-800 dark:bg-blue-500/10 dark:text-blue-500">
+                                        <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                        SEDANG DITINJAU
+                                    </span>
                                 @elseif($audit->status === 'REVISION')
-                                    <span class="inline-flex rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-800 dark:bg-red-500/10 dark:text-red-500">REVISI</span>
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-semibold text-red-800 dark:bg-red-500/10 dark:text-red-500">
+                                        <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                        REVISI
+                                    </span>
                                 @elseif($audit->status === 'DONE')
-                                    <span class="inline-flex rounded-full bg-success-50 px-2.5 py-0.5 text-xs font-medium text-success-800 dark:bg-success-500/10 dark:text-success-500">SELESAI</span>
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-success-50 px-2.5 py-0.5 text-xs font-semibold text-success-800 dark:bg-success-500/10 dark:text-success-500">
+                                        <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                        SELESAI
+                                    </span>
                                 @endif
                             </td>
-                            <td class="py-3.5 px-4 text-right">
-                                <a href="{{ route('audit.show', $audit->id) }}" class="text-sm font-semibold text-brand-500 hover:text-brand-600 dark:hover:text-brand-400">
-                                    Detail
-                                </a>
+                             <td class="py-3.5 px-4 text-right">
+                                <div class="flex items-center justify-end gap-2.5">
+                                    <!-- PDF Report Export -->
+                                    <a href="{{ route('audit.pdf', $audit->id) }}" target="_blank" 
+                                       class="inline-flex items-center gap-1 rounded-md bg-red-50 px-2 py-1 text-xs font-semibold text-red-700 hover:bg-red-100 transition dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20"
+                                       title="Lihat Laporan PDF">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><polyline points="10 9 9 9 8 9"/></svg>
+                                        PDF
+                                    </a>
+
+                                    <!-- Uploaded Attachment Link (if exists) -->
+                                    @php
+                                        $attachmentFile = null;
+                                        foreach($audit->files as $file) {
+                                            if(preg_match('/\.(jpg|jpeg|png|pdf|xlsx|xls|csv)$/i', $file->file_name)) {
+                                                $attachmentFile = asset('storage/' . $file->file_path);
+                                                break;
+                                            }
+                                        }
+                                        if(!$attachmentFile) {
+                                            foreach($audit->responses as $resp) {
+                                                foreach($resp->files as $file) {
+                                                    if(preg_match('/\.(jpg|jpeg|png|pdf|xlsx|xls|csv)$/i', $file->file_name)) {
+                                                        $attachmentFile = asset('storage/' . $file->file_path);
+                                                        break 2;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    @endphp
+                                    @if($attachmentFile)
+                                        <a href="{{ $attachmentFile }}" target="_blank" 
+                                           class="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-700 hover:bg-amber-100 transition dark:bg-amber-500/10 dark:text-amber-400 dark:hover:bg-amber-500/20"
+                                           title="Lihat Lampiran">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                                            Lampiran
+                                        </a>
+                                    @endif
+
+                                    <a href="{{ route('audit.show', $audit->id) }}" class="text-sm font-semibold text-brand-500 hover:text-brand-600 dark:hover:text-brand-400">
+                                        Detail
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     @empty

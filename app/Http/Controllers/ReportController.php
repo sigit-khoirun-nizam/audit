@@ -19,19 +19,19 @@ class ReportController extends Controller
         }
 
         // Filters
-        if ($request->has('status') && $request->status !== '') {
+        if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
         if ($request->has('start_date') && $request->start_date !== '') {
-            $query->whereDate('transaction_date', '>=', $request->start_date);
+            $query->where('transaction_date', '>=', $request->start_date);
         }
 
         if ($request->has('end_date') && $request->end_date !== '') {
-            $query->whereDate('transaction_date', '<=', $request->end_date);
+            $query->where('transaction_date', '<=', $request->end_date);
         }
 
-        if ($request->has('user_id') && $request->user_id !== '') {
+        if ($request->filled('user_id')) {
             $query->where('user_id', $request->user_id);
         }
 
@@ -59,10 +59,10 @@ class ReportController extends Controller
         }
 
         // Apply same filters
-        if ($request->has('status') && $request->status !== '') $query->where('status', $request->status);
-        if ($request->has('start_date') && $request->start_date !== '') $query->whereDate('transaction_date', '>=', $request->start_date);
-        if ($request->has('end_date') && $request->end_date !== '') $query->whereDate('transaction_date', '<=', $request->end_date);
-        if ($request->has('user_id') && $request->user_id !== '') $query->where('user_id', $request->user_id);
+        if ($request->filled('status')) $query->where('status', $request->status);
+        if ($request->has('start_date') && $request->start_date !== '') $query->where('transaction_date', '>=', $request->start_date);
+        if ($request->has('end_date') && $request->end_date !== '') $query->where('transaction_date', '<=', $request->end_date);
+        if ($request->filled('user_id')) $query->where('user_id', $request->user_id);
 
         $transactions = $query->get();
 
@@ -102,9 +102,9 @@ class ReportController extends Controller
             $query->where('user_id', $user->id);
         }
 
-        if ($request->has('status') && $request->status !== '') $query->where('status', $request->status);
-        if ($request->has('start_date') && $request->start_date !== '') $query->whereDate('transaction_date', '>=', $request->start_date);
-        if ($request->has('end_date') && $request->end_date !== '') $query->whereDate('transaction_date', '<=', $request->end_date);
+        if ($request->filled('status')) $query->where('status', $request->status);
+        if ($request->has('start_date') && $request->start_date !== '') $query->where('transaction_date', '>=', $request->start_date);
+        if ($request->has('end_date') && $request->end_date !== '') $query->where('transaction_date', '<=', $request->end_date);
         if ($request->has('user_id') && $request->user_id !== '') $query->where('user_id', $request->user_id);
 
         $transactions = $query->get();

@@ -16,5 +16,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoleAndPermissionSeeder::class,
         ]);
+
+        \App\Models\Setting::set('notification_phone', '08983274464');
     }
 }

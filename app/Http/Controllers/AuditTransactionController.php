@@ -6,18 +6,21 @@ use App\Models\AuditTransaction;
 use App\Models\AuditFile;
 use App\Models\User;
 use App\Models\ActivityLog;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\AuditTransactionImport;
+use Elibyy\TCPDF\Facades\TCPDF;
 
 class AuditTransactionController extends Controller
 {
     public function index(Request $request)
     {
-        $query = AuditTransaction::with(['user', 'creator']);
+        $query = AuditTransaction::with(['user', 'creator', 'files', 'responses.files']);
 
         // Role-based scoping
         $user = Auth::user();
@@ -26,16 +29,16 @@ class AuditTransactionController extends Controller
         }
 
         // Filters
-        if ($request->has('status') && $request->status !== '') {
+        if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
         if ($request->has('start_date') && $request->start_date !== '') {
-            $query->whereDate('transaction_date', '>=', $request->start_date);
+            $query->where('transaction_date', '>=', $request->start_date);
         }
 
         if ($request->has('end_date') && $request->end_date !== '') {
-            $query->whereDate('transaction_date', '<=', $request->end_date);
+            $query->where('transaction_date', '<=', $request->end_date);
         }
 
         if ($request->has('search') && $request->search !== '') {
@@ -47,7 +50,7 @@ class AuditTransactionController extends Controller
             });
         }
 
-        $transactions = $query->orderBy('transaction_date', 'desc')->paginate(10);
+        $transactions = $query->orderBy('id', 'desc')->paginate(10);
 
         return view('pages.audit.index', compact('transactions'));
     }
@@ -79,7 +82,17 @@ class AuditTransactionController extends Controller
             'transaction_type' => 'required|string',
             'description'      => 'required|string',
             'files'            => 'nullable|array',
-            'files.*'          => 'file|max:5120|mimes:jpg,jpeg,png,pdf',
+            'files.*'          => 'file|max:5120|mimes:jpg,jpeg,png,pdf,xlsx,xls,csv',
+        ], [
+            'transaction_date.required' => 'Tanggal transaksi wajib diisi.',
+            'user_id.required'          => 'Pengguna/Teller wajib dipilih.',
+            'account_number.required'   => 'Nomor rekening wajib diisi.',
+            'customer_name.required'    => 'Nama nasabah wajib diisi.',
+            'transaction_type.required' => 'Jenis transaksi wajib diisi.',
+            'description.required'      => 'Deskripsi temuan wajib diisi.',
+            'files.*.mimes'             => 'Format file yang diunggah harus: jpg, jpeg, png, pdf, xlsx, xls, csv.',
+            'files.*.max'               => 'Ukuran file tidak boleh lebih dari 5MB.',
+            'files.*.uploaded'          => 'Gagal mengunggah file. Pastikan ukuran file tidak terlalu besar.',
         ]);
 
         $assignedUser = User::findOrFail($request->user_id);
@@ -145,6 +158,58 @@ class AuditTransactionController extends Controller
         return view('pages.audit.show', compact('transaction'));
     }
 
+    public function downloadPdf($id)
+    {
+        $transaction = AuditTransaction::with([
+            'user', 
+            'creator', 
+            'files.uploader', 
+            'responses.user', 
+            'responses.files', 
+            'comments.user'
+        ])->findOrFail($id);
+
+        // Access check
+        $user = Auth::user();
+        if ($user && $user->hasRole('User') && $transaction->user_id !== $user->id) {
+            abort(403, 'Tindakan tidak diizinkan.');
+        }
+
+        // Generate HTML
+        $html = view('pages.audit.pdf', compact('transaction'))->render();
+
+        // Reset TCPDF state
+        TCPDF::reset();
+
+        // Set document details
+        TCPDF::SetCreator('Sistem Informasi Audit');
+        TCPDF::SetAuthor($transaction->creator ? $transaction->creator->name : 'Sistem');
+        TCPDF::SetTitle('Laporan Audit #' . $transaction->id);
+        TCPDF::SetSubject('Detail Temuan Audit');
+
+        // Page settings
+        TCPDF::setPrintHeader(false);
+        TCPDF::setPrintFooter(true);
+        TCPDF::SetMargins(15, 15, 15);
+        TCPDF::SetAutoPageBreak(true, 15);
+
+        // Add page
+        TCPDF::AddPage();
+
+        // Set font
+        TCPDF::SetFont('helvetica', '', 10);
+
+        // Write HTML content
+        TCPDF::writeHTML($html, true, false, true, false, '');
+
+        // Output as inline PDF
+        $pdfContent = TCPDF::Output('Audit_Report_' . $transaction->id . '.pdf', 'S');
+
+        return response($pdfContent)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'inline; filename="Audit_Report_' . $transaction->id . '.pdf"');
+    }
+
     public function update(Request $request, $id)
     {
         $user = Auth::user();
@@ -187,6 +252,31 @@ class AuditTransactionController extends Controller
         return redirect()->back()->with('success', "Status berhasil diperbarui menjadi {$statusLabel}.");
     }
 
+    private function sendWhatsAppViaFonnte($phone, $message)
+    {
+        Log::info("Sending WhatsApp message to {$phone}");
+
+        try {
+            $token = env('FONNTE_TOKEN');
+            if ($token) {
+                $responseHttp = Http::withoutVerifying()
+                    ->withHeaders([
+                        'Authorization' => $token,
+                    ])
+                    ->post('https://api.fonnte.com/send', [
+                        'target'  => $phone,
+                        'message' => $message,
+                    ]);
+
+                Log::info("Fonnte WA Response to {$phone}: " . $responseHttp->body());
+            } else {
+                Log::warning("Fonnte Token is missing in .env. Simulating WhatsApp to {$phone}:\n{$message}");
+            }
+        } catch (\Exception $e) {
+            Log::error("Failed to send WhatsApp notification via Fonnte to {$phone}: " . $e->getMessage());
+        }
+    }
+
     private function sendWhatsAppToUser(User $user, AuditTransaction $transaction)
     {
         $phone = $user->phone;
@@ -195,30 +285,48 @@ class AuditTransactionController extends Controller
             return;
         }
 
-        $message = "Halo {$user->name}\n\n"
-                 . "Ada temuan audit baru:\n\n"
-                 . "Tanggal: {$transaction->transaction_date}\n"
-                 . "Nasabah: {$transaction->customer_name}\n"
-                 . "Keterangan: {$transaction->description}\n\n"
-                 . "Silahkan login sistem audit untuk upload bukti penyelesaian.";
+        $message = "📢 *TEMUAN AUDIT BARU*\n"
+                 . "================================\n\n"
+                 . "Halo {$user->name},\n\n"
+                 . "Ada temuan audit baru yang memerlukan perhatian Anda:\n\n"
+                 . "```\n"
+                 . "Tanggal       : {$transaction->transaction_date}\n"
+                 . "No Rekening   : {$transaction->account_number}\n"
+                 . "Nasabah       : {$transaction->customer_name}\n"
+                 . "Keterangan    : {$transaction->description}\n"
+                 . "```\n\n"
+                 . "Silahkan login ke sistem audit untuk mengupload bukti penyelesaian.\n\n"
+                 . "--------------------------------\n"
+                 . "-=| *AUDIT MONITORING SYSTEM* |=-";
 
-        // Simulate WhatsApp Gateway API Call
-        Log::info("SIMULATING WA GATEWAY SEND TO {$phone}: \n{$message}");
+        $this->sendWhatsAppViaFonnte($phone, $message);
     }
 
     private function sendWhatsAppApproval(User $user, AuditTransaction $transaction)
     {
-        $phone = $user->phone;
-        if (!$phone) {
-            return;
+        $message = "📢 *AUDIT SELESAI*\n"
+                 . "================================\n\n"
+                 . "Audit Anda telah selesai diverifikasi.\n\n"
+                 . "```\n"
+                 . "Tanggal Audit : " . $transaction->transaction_date . "\n"
+                 . "No Rekening   : " . $transaction->account_number . "\n"
+                 . "Nasabah       : " . $transaction->customer_name . "\n"
+                 . "Status        : SELESAI (DONE)\n"
+                 . "```\n\n"
+                 . "Terima kasih atas tindak lanjut dan kerja samanya.\n\n"
+                 . "--------------------------------\n"
+                 . "-=| *AUDIT MONITORING SYSTEM* |=-";
+
+        // Send to the assigned user
+        if ($user->phone) {
+            $this->sendWhatsAppViaFonnte($user->phone, $message);
         }
 
-        $message = "Audit anda sudah selesai.\n\n"
-                 . "Status: SELESAI\n\n"
-                 . "Terima kasih.";
-
-        // Simulate WhatsApp Gateway API Call
-        Log::info("SIMULATING WA GATEWAY SEND TO {$phone}: \n{$message}");
+        // Also send to the configured dynamic target number
+        $targetPhone = Setting::get('notification_phone', '08983274464');
+        if ($targetPhone) {
+            $this->sendWhatsAppViaFonnte($targetPhone, $message);
+        }
     }
 
     public function downloadTemplate()

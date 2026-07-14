@@ -24,11 +24,12 @@
             <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
                 <!-- Transaction Date -->
                 <div>
-                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                        Tanggal Transaksi<span class="text-red-500">*</span>
-                    </label>
-                    <input type="date" name="transaction_date" value="{{ old('transaction_date', date('Y-m-d')) }}"
-                        class="h-11 w-full rounded-lg border @error('transaction_date') border-red-500 @else border-gray-300 @enderror bg-transparent px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:text-white/90 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10" required />
+                    <x-form.date-picker 
+                        id="transaction_date" 
+                        name="transaction_date" 
+                        label="Tanggal Transaksi" 
+                        placeholder="Pilih Tanggal" 
+                        defaultDate="{{ old('transaction_date', date('Y-m-d')) }}" />
                     @error('transaction_date')
                         <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                     @enderror
@@ -39,14 +40,60 @@
                     <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                         Tugaskan ke Pengguna / Teller<span class="text-red-500">*</span>
                     </label>
-                    <select name="user_id" class="h-11 w-full rounded-lg border @error('user_id') border-red-500 @else border-gray-300 @enderror bg-white px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10" required>
-                        <option value="">Pilih Pengguna</option>
-                        @foreach($users as $u)
-                            <option value="{{ $u->id }}" {{ old('user_id') == $u->id ? 'selected' : '' }}>
-                                {{ $u->name }} &mdash; {{ $u->user_code }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <div x-data="{
+                        open: false,
+                        search: '',
+                        selectedId: '{{ old('user_id') }}',
+                        selectedName: '{{ old('user_id') ? addslashes($users->firstWhere('id', old('user_id'))->name . ' — ' . $users->firstWhere('id', old('user_id'))->user_code) : 'Pilih Pengguna' }}',
+                        options: [
+                            @foreach($users as $u)
+                                { id: '{{ $u->id }}', name: '{{ addslashes($u->name) }} — {{ $u->user_code }}' },
+                            @endforeach
+                        ],
+                        get filteredOptions() {
+                            if (!this.search) return this.options;
+                            return this.options.filter(opt => opt.name.toLowerCase().includes(this.search.toLowerCase()));
+                        },
+                        selectOption(opt) {
+                            this.selectedId = opt.id;
+                            this.selectedName = opt.name;
+                            this.open = false;
+                            this.search = '';
+                        }
+                    }" class="relative bg-transparent z-40" :class="open ? 'z-40' : 'z-20'">
+                        <!-- Hidden Select to bind with form submission -->
+                        <select name="user_id" id="user_id" class="hidden" required :value="selectedId">
+                            <option value="">Pilih Pengguna</option>
+                            <template x-for="opt in options" :key="opt.id">
+                                <option :value="opt.id" :selected="opt.id == selectedId" x-text="opt.name"></option>
+                            </template>
+                        </select>
+
+                        <button type="button" @click="open = !open" @click.outside="open = false" 
+                            class="h-11 w-full rounded-lg border @error('user_id') border-red-500 @else border-gray-300 dark:border-gray-700 @enderror bg-transparent px-4 py-2.5 text-sm text-left text-gray-800 dark:text-white/90 focus:outline-hidden focus:ring-1 focus:ring-brand-500 focus:border-brand-500 flex justify-between items-center dark:bg-white/[0.03]">
+                            <span x-text="selectedName" :class="selectedId ? 'text-gray-800 dark:text-white' : 'text-gray-400 dark:text-gray-500'">Pilih Pengguna</span>
+                            <svg class="w-5 h-5 text-gray-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        
+                        <div x-show="open" x-transition class="absolute left-0 z-50 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-60 overflow-y-auto p-2 space-y-2">
+                            <input type="text" x-model="search" placeholder="Cari..." 
+                                class="h-9 w-full rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 focus:outline-hidden focus:ring-1 focus:ring-brand-500 focus:border-brand-500" 
+                                @click.stop="">
+                            <div class="space-y-1">
+                                <template x-for="opt in filteredOptions" :key="opt.id">
+                                    <button type="button" @click="selectOption(opt)" 
+                                        class="w-full text-left px-3 py-2 rounded-md text-xs hover:bg-brand-55 dark:hover:bg-brand-500/10 hover:text-brand-600 dark:hover:text-brand-400 text-gray-700 dark:text-gray-300 block">
+                                        <span x-text="opt.name"></span>
+                                    </button>
+                                </template>
+                                <div x-show="filteredOptions.length === 0" class="py-2 text-center text-xs text-gray-400 dark:text-gray-500">
+                                    Tidak ditemukan data
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     @error('user_id')
                         <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                     @enderror
@@ -107,7 +154,7 @@
                     </label>
                     <input type="file" name="files[]" multiple
                         class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 dark:file:bg-white/5 dark:file:text-white/80" />
-                    <p class="mt-1 text-xs text-gray-400">Format yang diperbolehkan: JPG, PNG, PDF. Ukuran maks: 5MB per file.</p>
+                    <p class="mt-1 text-xs text-gray-400">Format yang diperbolehkan: JPG, PNG, PDF, Excel (XLSX, XLS, CSV). Ukuran maks: 5MB per file.</p>
                     @error('files')
                         <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                     @enderror

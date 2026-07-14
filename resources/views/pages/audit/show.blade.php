@@ -23,15 +23,32 @@
                 </p>
             </div>
         </div>
-        <div>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('audit.pdf', $transaction->id) }}" target="_blank" 
+               class="inline-flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-700 hover:bg-red-100 dark:border-red-800 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20 transition shadow-theme-xs">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><polyline points="10 9 9 9 8 9"/></svg>
+                Lihat PDF
+            </a>
             @if($transaction->status === 'PENDING')
-                <span class="inline-flex rounded-full bg-amber-50 px-3 py-1 text-sm font-semibold text-amber-800 dark:bg-amber-500/10 dark:text-amber-500">PENDING</span>
+                <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 px-3 py-1 text-sm font-semibold text-amber-800 dark:bg-amber-500/10 dark:text-amber-500">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    PENDING
+                </span>
             @elseif($transaction->status === 'ON_REVIEW')
-                <span class="inline-flex rounded-full bg-blue-50 px-3 py-1 text-sm font-semibold text-blue-800 dark:bg-blue-500/10 dark:text-blue-500">SEDANG DITINJAU</span>
+                <span class="inline-flex items-center gap-1 rounded-full bg-blue-50 px-3 py-1 text-sm font-semibold text-blue-800 dark:bg-blue-500/10 dark:text-blue-500">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    SEDANG DITINJAU
+                </span>
             @elseif($transaction->status === 'REVISION')
-                <span class="inline-flex rounded-full bg-red-50 px-3 py-1 text-sm font-semibold text-red-800 dark:bg-red-500/10 dark:text-red-500">REVISI</span>
+                <span class="inline-flex items-center gap-1 rounded-full bg-red-50 px-3 py-1 text-sm font-semibold text-red-800 dark:bg-red-500/10 dark:text-red-500">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    REVISI
+                </span>
             @elseif($transaction->status === 'DONE')
-                <span class="inline-flex rounded-full bg-success-50 px-3 py-1 text-sm font-semibold text-success-800 dark:bg-success-500/10 dark:text-success-500">SELESAI</span>
+                <span class="inline-flex items-center gap-1 rounded-full bg-success-50 px-3 py-1 text-sm font-semibold text-success-800 dark:bg-success-500/10 dark:text-success-500">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    SELESAI
+                </span>
             @endif
         </div>
     </div>
@@ -48,7 +65,7 @@
                 <div class="mt-4 grid grid-cols-1 gap-y-4 gap-x-6 sm:grid-cols-2">
                     <div>
                         <span class="text-xs font-semibold uppercase text-gray-400">Tanggal Transaksi</span>
-                        <p class="mt-1 text-sm font-medium text-gray-800 dark:text-white/90">{{ $transaction->transaction_date }}</p>
+                        <p class="mt-1 text-sm font-medium text-gray-800 dark:text-white/90">{{ \Carbon\Carbon::parse($transaction->transaction_date)->format('d-m-Y') }}</p>
                     </div>
                     <div>
                         <span class="text-xs font-semibold uppercase text-gray-400">Nomor Rekening</span>
@@ -104,6 +121,8 @@
                                     <div class="mt-3 flex items-center justify-end gap-2 border-t border-gray-200/50 pt-2 dark:border-gray-800">
                                         @if(preg_match('/\.(jpg|jpeg|png)$/i', $file->file_name))
                                             <a href="{{ asset('storage/' . $file->file_path) }}" target="_blank" class="text-xs font-semibold text-gray-500 hover:text-gray-700 dark:hover:text-white">Lihat Gambar</a>
+                                        @elseif(preg_match('/\.pdf$/i', $file->file_name))
+                                            <a href="{{ asset('storage/' . $file->file_path) }}" target="_blank" class="text-xs font-semibold text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">Lihat PDF</a>
                                         @endif
                                         <a href="{{ asset('storage/' . $file->file_path) }}" download class="text-xs font-bold text-brand-500 hover:text-brand-600">Unduh</a>
                                     </div>
@@ -172,12 +191,21 @@
                         @method('PUT')
                         <div>
                             <label class="mb-1.5 block text-xs font-semibold uppercase text-gray-400">Ubah Status</label>
-                            <select name="status" class="h-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                                <option value="PENDING" {{ $transaction->status === 'PENDING' ? 'selected' : '' }}>PENDING</option>
-                                <option value="ON_REVIEW" {{ $transaction->status === 'ON_REVIEW' ? 'selected' : '' }}>SEDANG DITINJAU</option>
-                                <option value="REVISION" {{ $transaction->status === 'REVISION' ? 'selected' : '' }}>REVISI</option>
-                                <option value="DONE" {{ $transaction->status === 'DONE' ? 'selected' : '' }}>SELESAI</option>
-                            </select>
+                            <div x-data="{ isOptionSelected: true }" class="relative z-20 bg-transparent">
+                                <select name="status" 
+                                    class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 pr-11 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
+                                    :class="isOptionSelected && 'text-gray-800 dark:text-white/90'" @change="isOptionSelected = true">
+                                    <option value="PENDING" class="text-gray-700 dark:bg-gray-900 dark:text-gray-400" {{ $transaction->status === 'PENDING' ? 'selected' : '' }}>PENDING</option>
+                                    <option value="ON_REVIEW" class="text-gray-700 dark:bg-gray-900 dark:text-gray-400" {{ $transaction->status === 'ON_REVIEW' ? 'selected' : '' }}>SEDANG DITINJAU</option>
+                                    <option value="REVISION" class="text-gray-700 dark:bg-gray-900 dark:text-gray-400" {{ $transaction->status === 'REVISION' ? 'selected' : '' }}>REVISI</option>
+                                    <option value="DONE" class="text-gray-700 dark:bg-gray-900 dark:text-gray-400" {{ $transaction->status === 'DONE' ? 'selected' : '' }}>SELESAI</option>
+                                </select>
+                                <span class="pointer-events-none absolute top-1/2 right-4 z-30 -translate-y-1/2 text-gray-700 dark:text-gray-400">
+                                    <svg class="stroke-current" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M4.79175 7.396L10.0001 12.6043L15.2084 7.396" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </span>
+                            </div>
                         </div>
                         <button type="submit" class="w-full rounded-lg bg-brand-500 py-2.5 text-sm font-semibold text-white hover:bg-brand-600 transition">
                             Perbarui Status
@@ -205,7 +233,7 @@
                         <div>
                             <label class="mb-1.5 block text-xs font-semibold uppercase text-gray-400">File Bukti</label>
                             <input type="file" name="files[]" multiple class="w-full text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 dark:file:bg-white/5 dark:file:text-white" required />
-                            <p class="mt-1 text-[10px] text-gray-400">Format JPG, PNG, PDF diperbolehkan. Maks 5MB per file.</p>
+                            <p class="mt-1 text-[10px] text-gray-400">Format JPG, PNG, PDF, Excel (XLSX, XLS, CSV) diperbolehkan. Maks 5MB per file.</p>
                         </div>
                         <button type="submit" class="w-full rounded-lg bg-success-500 py-2.5 text-sm font-semibold text-white hover:bg-success-600 transition shadow-theme-xs">
                             Kirim Bukti & Set Tinjauan
@@ -238,7 +266,15 @@
                                             <span class="truncate text-gray-600 dark:text-gray-400" title="{{ $file->file_name }}">
                                                 &bull; {{ $file->file_name }}
                                             </span>
-                                            <a href="{{ asset('storage/' . $file->file_path) }}" download class="text-brand-500 font-bold hover:underline shrink-0">Unduh</a>
+                                            <div class="flex items-center gap-2 shrink-0">
+                                                @if(preg_match('/\.(jpg|jpeg|png)$/i', $file->file_name))
+                                                    <a href="{{ asset('storage/' . $file->file_path) }}" target="_blank" class="text-gray-500 hover:text-gray-700 dark:hover:text-white font-semibold">Lihat Gambar</a>
+                                                @elseif(preg_match('/\.pdf$/i', $file->file_name))
+                                                    <a href="{{ asset('storage/' . $file->file_path) }}" target="_blank" class="text-red-500 hover:text-red-600 font-semibold">Lihat PDF</a>
+                                                @endif
+                                                <span class="text-gray-300">|</span>
+                                                <a href="{{ asset('storage/' . $file->file_path) }}" download class="text-brand-500 font-bold hover:underline">Unduh</a>
+                                            </div>
                                         </div>
                                     @endforeach
                                 </div>

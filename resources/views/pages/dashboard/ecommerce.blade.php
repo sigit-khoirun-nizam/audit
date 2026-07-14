@@ -208,7 +208,7 @@
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
                     @forelse($recentAudits as $audit)
                         <tr>
-                            <td class="py-3.5 px-4 font-medium">{{ $audit->transaction_date }}</td>
+                            <td class="py-3.5 px-4 font-medium">{{ \Carbon\Carbon::parse($audit->transaction_date)->format('d-m-Y') }}</td>
                             <td class="py-3.5 px-4 text-gray-500 dark:text-gray-400">{{ $audit->user_code }}</td>
                             <td class="py-3.5 px-4">{{ $audit->account_number }}</td>
                             <td class="py-3.5 px-4 font-medium">{{ $audit->customer_name }}</td>
