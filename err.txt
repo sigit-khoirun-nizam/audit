@@ -1,6 +1,3 @@
-<button type="button" @click="open = !open" @click.outside="open = false" class="h-11 w-full rounded-lg border  border-gray-300 dark:border-gray-700  bg-transparent px-4 py-2.5 text-sm text-left text-gray-800 dark:text-white/90 focus:outline-hidden focus:ring-1 focus:ring-brand-500 focus:border-brand-500 flex justify-between items-center dark:bg-white/[0.03]">
-                            <span x-text="selectedName" :class="selectedId ? 'text-gray-800 dark:text-white' : 'text-gray-400 dark:text-gray-500'" class="text-gray-400 dark:text-gray-500">Pilih Pengguna</span>
-                            <svg class="w-5 h-5 text-gray-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </button>
+<span class="mr-3 overflow-hidden rounded-full h-11 w-11">
+            <img src="/images/user/owner.png" alt="User">
+        </span>

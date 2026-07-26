@@ -405,4 +405,45 @@ class AuditTransactionController extends Controller
             return redirect()->back()->withErrors(['file' => 'Gagal mengimpor file Excel: ' . $e->getMessage()]);
         }
     }
+
+    public function destroy($id)
+    {
+        $user = Auth::user();
+        if (!$user->hasRole('Auditor') && !$user->hasRole('Superadmin')) {
+            abort(403, 'Tindakan tidak diizinkan.');
+        }
+
+        $transaction = AuditTransaction::findOrFail($id);
+
+        // Delete associated files from storage
+        foreach ($transaction->files as $file) {
+            Storage::disk('public')->delete($file->file_path);
+            $file->delete();
+        }
+
+        // Also delete response files if any
+        foreach ($transaction->responses as $response) {
+            foreach ($response->files as $file) {
+                Storage::disk('public')->delete($file->file_path);
+                $file->delete();
+            }
+            $response->delete();
+        }
+
+        // Delete comments
+        $transaction->comments()->delete();
+
+        // Delete the transaction itself
+        $transaction->delete();
+
+        // Activity Log
+        ActivityLog::create([
+            'user_id'              => Auth::id(),
+            'audit_transaction_id' => null,
+            'action'               => 'DELETE_AUDIT_' . $id,
+            'ip_address'           => request()->ip(),
+        ]);
+
+        return redirect()->route('audit.index')->with('success', 'Transaksi audit berhasil dihapus.');
+    }
 }

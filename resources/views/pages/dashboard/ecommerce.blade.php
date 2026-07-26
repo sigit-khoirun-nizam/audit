@@ -225,9 +225,21 @@
                                 @endif
                             </td>
                             <td class="py-3.5 px-4 text-right">
-                                <a href="{{ route('audit.show', $audit->id) }}" class="text-sm font-semibold text-brand-500 hover:text-brand-600 dark:hover:text-brand-400">
-                                    Detail
-                                </a>
+                                <div class="flex items-center justify-end gap-2.5">
+                                    <a href="{{ route('audit.show', $audit->id) }}" class="text-sm font-semibold text-brand-500 hover:text-brand-600 dark:hover:text-brand-400">
+                                        Detail
+                                    </a>
+                                    
+                                    @if ($user && ($user->hasRole('Auditor') || $user->hasRole('Superadmin')))
+                                        <form action="{{ route('audit.destroy', $audit->id) }}" method="POST" class="inline-block form-delete">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-sm font-semibold text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300">
+                                                Hapus
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                     @empty
@@ -243,3 +255,34 @@
     </div>
   </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteForms = document.querySelectorAll('.form-delete');
+        deleteForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const isDark = document.documentElement.classList.contains('dark');
+                
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: "Data transaksi audit ini akan dihapus permanen!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal',
+                    background: isDark ? '#1d2939' : '#ffffff',
+                    color: isDark ? '#f9fafb' : '#101828',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    });
+</script>
+@endpush

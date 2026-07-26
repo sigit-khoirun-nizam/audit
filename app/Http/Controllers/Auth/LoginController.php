@@ -18,14 +18,19 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
+        $request->validate([
+            'login' => ['required', 'string'],
             'password' => ['required'],
         ], [
-            'email.required' => 'Kolom email wajib diisi.',
-            'email.email' => 'Format email tidak valid.',
+            'login.required' => 'Kolom email atau kode pengguna wajib diisi.',
             'password.required' => 'Kolom kata sandi wajib diisi.',
         ]);
+
+        $loginType = filter_var($request->input('login'), FILTER_VALIDATE_EMAIL) ? 'email' : 'user_code';
+        $credentials = [
+            $loginType => $request->input('login'),
+            'password' => $request->input('password')
+        ];
 
         $remember = $request->has('remember');
 
@@ -36,8 +41,8 @@ class LoginController extends Controller
         }
 
         return back()->withErrors([
-            'email' => 'Kredensial yang diberikan tidak cocok dengan data kami.',
-        ])->onlyInput('email');
+            'login' => 'Kredensial yang diberikan tidak cocok dengan data kami.',
+        ])->onlyInput('login');
     }
 
     public function logout(Request $request)
