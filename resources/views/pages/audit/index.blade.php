@@ -106,6 +106,7 @@
                         <th class="py-3 px-4">Jenis</th>
                         <th class="py-3 px-4">User Diaudit</th>
                         <th class="py-3 px-4">Status</th>
+                        <th class="py-3 px-4">Terakhir Update</th>
                         <th class="py-3 px-4 text-right">Aksi</th>
                     </tr>
                 </thead>
@@ -140,6 +141,11 @@
                                         <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                                         SELESAI
                                     </span>
+                                @endif
+                            </td>
+                            <td class="py-3.5 px-4 text-xs text-gray-500 dark:text-gray-400">
+                                @if($audit->responses->count() > 0)
+                                    {{ $audit->responses->sortByDesc('created_at')->first()->created_at->format('d-m-Y H:i') }}
                                 @endif
                             </td>
                              <td class="py-3.5 px-4 text-right">

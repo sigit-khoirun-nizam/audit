@@ -50,8 +50,9 @@
 
             <!-- Logo (mobile only) -->
             <a href="/" class="xl:hidden">
-                <img class="dark:hidden" src="/images/logo/logo.svg" alt="Logo" />
-                <img class="hidden dark:block" src="/images/logo/logo-dark.svg" alt="Logo" />
+                <span class="text-2xl font-bold text-gray-800 dark:text-white tracking-wide">
+                    AUDIT
+                </span>
             </a>
 
             <!-- Application Menu Toggle (mobile only) -->
