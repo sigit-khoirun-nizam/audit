@@ -219,11 +219,15 @@ class AuditTransactionController extends Controller
 
         $request->validate([
             'status' => 'required|in:PENDING,ON_REVIEW,REVISION,DONE',
+            'transaction_date' => 'nullable|date',
         ]);
 
         $transaction = AuditTransaction::findOrFail($id);
         $oldStatus = $transaction->status;
         $transaction->status = $request->status;
+        if ($request->filled('transaction_date')) {
+            $transaction->transaction_date = $request->transaction_date;
+        }
         $transaction->save();
 
         // Activity Log

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cdc875352a2b320cd3f57a3af10cf0ec",
+    "content-hash": "71e6cccabb2e197282f2cec0c723ccff",
     "packages": [
         {
             "name": "brick/math",
@@ -663,21 +663,21 @@
         },
         {
             "name": "elibyy/tcpdf-laravel",
-            "version": "13.0.0",
+            "version": "13.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/elibyy/tcpdf-laravel.git",
-                "reference": "37f8f19ce5ca2df2adb1f9e2e0ca2564b3c24880"
+                "reference": "2a30d59c55aeae1bcdf47bfdeafb9ac10e109581"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/elibyy/tcpdf-laravel/zipball/37f8f19ce5ca2df2adb1f9e2e0ca2564b3c24880",
-                "reference": "37f8f19ce5ca2df2adb1f9e2e0ca2564b3c24880",
+                "url": "https://api.github.com/repos/elibyy/tcpdf-laravel/zipball/2a30d59c55aeae1bcdf47bfdeafb9ac10e109581",
+                "reference": "2a30d59c55aeae1bcdf47bfdeafb9ac10e109581",
                 "shasum": ""
             },
             "require": {
                 "illuminate/support": "^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0|^13.0",
-                "tecnickcom/tcpdf": "6.2.*|6.3.*|6.4.*|6.5.*|6.6.*|6.7.*|6.8.*|6.9.*|6.10.*|dev-main"
+                "tecnickcom/tcpdf": "6.2.*|6.3.*|6.4.*|6.5.*|6.6.*|6.7.*|6.8.*|6.9.*|6.10.*|6.11.*|dev-main"
             },
             "type": "library",
             "extra": {
@@ -713,9 +713,9 @@
             ],
             "support": {
                 "issues": "https://github.com/elibyy/tcpdf-laravel/issues",
-                "source": "https://github.com/elibyy/tcpdf-laravel/tree/13.0.0"
+                "source": "https://github.com/elibyy/tcpdf-laravel/tree/13.0.1"
             },
-            "time": "2026-02-22T16:56:39+00:00"
+            "time": "2026-03-12T19:29:28+00:00"
         },
         {
             "name": "ezyang/htmlpurifier",

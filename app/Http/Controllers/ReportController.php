@@ -43,13 +43,6 @@ class ReportController extends Controller
 
     public function exportExcel(Request $request)
     {
-        // Placeholder for Excel export
-        // In the future, this will build a spreadsheet using Laravel Excel or direct CSV output
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="audit_report_' . date('Y-m-d') . '.csv"',
-        ];
-
         $query = AuditTransaction::with(['user', 'creator']);
 
         // Role-based scoping
@@ -66,28 +59,10 @@ class ReportController extends Controller
 
         $transactions = $query->get();
 
-        $callback = function () use ($transactions) {
-            $file = fopen('php://output', 'w');
-            fputcsv($file, ['ID', 'Tanggal Transaksi', 'ID User', 'Kode User', 'Nomor Rekening', 'Nama Nasabah', 'Jenis Transaksi', 'Deskripsi', 'Status', 'Dibuat Oleh']);
-
-            foreach ($transactions as $t) {
-                fputcsv($file, [
-                    $t->id,
-                    $t->transaction_date,
-                    $t->user_id,
-                    $t->user_code,
-                    $t->account_number,
-                    $t->customer_name,
-                    $t->transaction_type,
-                    $t->description,
-                    $t->status,
-                    $t->creator ? $t->creator->name : 'System',
-                ]);
-            }
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new \App\Exports\AuditReportExport($transactions), 
+            'audit_report_' . date('Y-m-d') . '.xlsx'
+        );
     }
 
     public function exportPdf(Request $request)

@@ -19,10 +19,12 @@ class AuditResponseController extends Controller
     {
         $request->validate([
             'audit_transaction_id' => 'required|exists:audit_transactions,id',
+            'transaction_date'     => 'required|date',
             'note'                 => 'required|string',
             'files'                => 'required|array|min:1',
             'files.*'              => 'file|max:5120|mimes:jpg,jpeg,png,pdf,xlsx,xls,csv',
         ], [
+            'transaction_date.required' => 'Tanggal audit wajib diisi.',
             'files.*.mimes' => 'Format file yang diunggah harus: jpg, jpeg, png, pdf, xlsx, xls, csv.',
             'files.*.max' => 'Ukuran file tidak boleh lebih dari 5MB.',
             'files.*.file' => 'File tidak valid.',
@@ -49,9 +51,10 @@ class AuditResponseController extends Controller
             'status'               => 'SUBMITTED',
         ]);
 
-        // Update the audit transaction status to ON_REVIEW
+        // Update the audit transaction status to ON_REVIEW and set transaction_date
         $oldStatus = $transaction->status;
         $transaction->status = 'ON_REVIEW';
+        $transaction->transaction_date = $request->transaction_date;
         $transaction->save();
 
         // Handle response file uploads

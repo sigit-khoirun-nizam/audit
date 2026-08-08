@@ -226,6 +226,15 @@
                         <input type="hidden" name="audit_transaction_id" value="{{ $transaction->id }}" />
                         
                         <div>
+                            <label class="mb-1.5 block text-xs font-semibold uppercase text-gray-400">Tanggal Audit</label>
+                            <x-form.date-picker 
+                                id="transaction_date" 
+                                name="transaction_date" 
+                                placeholder="Pilih Tanggal"
+                                defaultDate="{{ \Carbon\Carbon::parse($transaction->transaction_date)->format('Y-m-d') }}" 
+                            />
+                        </div>
+                        <div>
                             <label class="mb-1.5 block text-xs font-semibold uppercase text-gray-400">Catatan Respon</label>
                             <textarea name="note" rows="3" placeholder="Tulis detail respon, penjelasan, atau catatan koreksi..."
                                 class="w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 dark:border-gray-700 dark:text-white/90 focus:outline-hidden focus:ring-3" required></textarea>
