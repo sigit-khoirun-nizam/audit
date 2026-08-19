@@ -335,47 +335,7 @@ class AuditTransactionController extends Controller
 
     public function downloadTemplate()
     {
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="template_import_audit.csv"',
-        ];
-
-        $callback = function () {
-            $file = fopen('php://output', 'w');
-            
-            // Excel headers
-            fputcsv($file, [
-                'tanggal_transaksi',
-                'kode_user',
-                'nomor_rekening',
-                'nama_nasabah',
-                'jenis_transaksi',
-                'deskripsi'
-            ]);
-
-            // Sample rows
-            fputcsv($file, [
-                date('Y-m-d'),
-                '17800T60',
-                '000003',
-                'GEMILANG',
-                'TELLER 1780060',
-                'Keterangan selisih kas teller sebesar Rp 100,000'
-            ]);
-            
-            fputcsv($file, [
-                date('Y-m-d'),
-                '17800CS63',
-                '000004',
-                'BUDI SANJAYA',
-                'CUSTOMER SERVICE',
-                'Kesalahan input data pembukaan rekening baru'
-            ]);
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
+        return Excel::download(new \App\Exports\AuditTemplateExport, 'template_import_audit.xlsx');
     }
 
     public function importExcel(Request $request)

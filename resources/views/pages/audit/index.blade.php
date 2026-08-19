@@ -255,8 +255,8 @@
                 <div class="rounded-xl bg-gray-50 p-4 dark:bg-white/5 text-xs text-gray-500 dark:text-gray-400 space-y-1.5">
                     <div class="flex items-center justify-between">
                         <p class="font-bold text-gray-700 dark:text-gray-300">Format Kolom Excel:</p>
-                        <a href="{{ route('audit.import.template') }}" class="text-brand-500 hover:text-brand-600 font-bold flex items-center gap-1 transition">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        <a href="{{ route('audit.import.template') }}" class="group inline-flex items-center gap-1.5 rounded-lg bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-600 shadow-sm ring-1 ring-inset ring-brand-500/20 transition-all duration-200 hover:bg-brand-500 hover:text-white hover:shadow-md hover:-translate-y-0.5 dark:bg-brand-500/10 dark:text-brand-400 dark:ring-brand-500/30 dark:hover:bg-brand-500 dark:hover:text-white">
+                            <svg class="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:scale-110" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                             Unduh Contoh
                         </a>
                     </div>
